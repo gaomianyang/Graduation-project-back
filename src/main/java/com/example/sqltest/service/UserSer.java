@@ -2,6 +2,7 @@ package com.example.sqltest.service;
 
 import com.example.sqltest.bean.UserBean;
 import com.example.sqltest.dao.UserDao;
+import com.example.sqltest.util.AESUtil;
 import com.example.sqltest.util.MD5Util;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -13,7 +14,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 
 import java.security.Key;
@@ -64,18 +64,18 @@ public class UserSer {
         expirationDate.setTime(expirationDate.getTime()+60*30000);
 
         String jws = Jwts.builder().setSubject(sub).signWith(key).setExpiration(expirationDate).compact();
+        jws = AESUtil.encrypt(jws,saltKey);
 
         return jws;
     }
 
     public boolean testJjwt(String Authorization){
         try {
-
+            Authorization = AESUtil.decrypt(Authorization,saltKey);
             Jwts.parser().setSigningKey(key).parseClaimsJws(Authorization);
             return true;
 
         } catch (JwtException e) {
-
             System.out.println("error");
             return false;
         }
