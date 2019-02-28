@@ -38,8 +38,10 @@ public class UserSer {
         if(StringUtils.isEmpty(userBean.getUserName()) || StringUtils.isEmpty(userBean.getPassword())){
             throw new RuntimeException("Error, please re-register!");
         }
-        userBean.setPassword(MD5Util.md5(userBean.getPassword(),saltKey));
-        userDao.save(userBean);
+        if(!checkUserName(userBean.getUserName())){
+            userBean.setPassword(MD5Util.md5(userBean.getPassword(),saltKey));
+            userDao.save(userBean);
+        }
     }
 
     public boolean checkUserName(String userName){
@@ -61,7 +63,7 @@ public class UserSer {
 
     public String getKey(String sub){
         Date expirationDate = new Date();
-        expirationDate.setTime(expirationDate.getTime()+60*30000);
+        expirationDate.setTime(expirationDate.getTime()+30*60*1000);
 
         String jws = Jwts.builder().setSubject(sub).signWith(key).setExpiration(expirationDate).compact();
         jws = AESUtil.encrypt(jws,saltKey);

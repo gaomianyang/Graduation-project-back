@@ -1,7 +1,6 @@
 package com.example.sqltest.ctrl;
 
 import com.example.sqltest.bean.UserBean;
-import com.example.sqltest.dao.UserDao;
 import com.example.sqltest.service.UserSer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/SqlTest")
+@RequestMapping("/user")
 public class UserCtrl {
 
     @Autowired
@@ -25,14 +24,6 @@ public class UserCtrl {
     @Autowired
     private RedisConnectionFactory factory;
 
-
-    /**
-
-     * 测试保存数据方法.
-
-     * @return
-
-     */
 
     @PostMapping("/login")
     public String login(@RequestBody UserBean userBean) throws Exception {
@@ -50,8 +41,5 @@ public class UserCtrl {
         return userSer.checkUserName(userName);
     }
 
-    @GetMapping("/testHeader")
-    public void testHeader(@RequestHeader String Authorization){
-        System.out.println(userSer.testJjwt(Authorization));
-    }
+
 }
