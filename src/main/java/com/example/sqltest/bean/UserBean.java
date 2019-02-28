@@ -1,5 +1,6 @@
 package com.example.sqltest.bean;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -7,9 +8,10 @@ import javax.persistence.*;
 @Entity
 @Table(name="users")
 @Component
+@GenericGenerator(name = "jpa-uuid", strategy = "uuid")
 public class UserBean {
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "jpa-uuid")
     @Column(name="id")
     private String userid;
 

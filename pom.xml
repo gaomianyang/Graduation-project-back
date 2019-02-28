@@ -78,6 +78,11 @@
 			<version>0.10.5</version>
 			<scope>runtime</scope>
 		</dependency>
+		<!--&lt;!&ndash; 安全框架 Spring Security &ndash;&gt;-->
+		<!--<dependency>-->
+			<!--<groupId>org.springframework.boot</groupId>-->
+			<!--<artifactId>spring-boot-starter-security</artifactId>-->
+		<!--</dependency>-->
 	</dependencies>
 
 	<build>

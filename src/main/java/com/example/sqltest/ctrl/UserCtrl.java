@@ -2,20 +2,14 @@ package com.example.sqltest.ctrl;
 
 import com.example.sqltest.bean.UserBean;
 import com.example.sqltest.dao.UserDao;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
+import com.example.sqltest.service.UserSer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Key;
-import java.util.Date;
+
 
 
 @RestController
@@ -23,15 +17,13 @@ import java.util.Date;
 public class UserCtrl {
 
     @Autowired
-    private UserDao userDao;
+    private UserSer userSer;
     @Autowired
-    StringRedisTemplate stringRedisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
-    RedisConnectionFactory factory;
-
-    Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private RedisConnectionFactory factory;
 
 
     /**
@@ -42,37 +34,24 @@ public class UserCtrl {
 
      */
 
-    @PostMapping("/findOne")
-    public Object findUser(@RequestBody UserBean userBean){
-        System.out.println("账号：" + userBean.getUserName() + "密码：" + userBean.getPassword());
-        if(null == userBean.getUserName() || null == userBean.getPassword()){
-            return new UserBean();
-        }
-        Example<UserBean> example = Example.of(userBean);
-        return userDao.findOne(example).get();
+    @PostMapping("/login")
+    public String login(@RequestBody UserBean userBean) throws Exception {
+        return userSer.getKey(userSer.login(userBean));
     }
 
-    @PostMapping("/testjjwt")
-    public boolean testJjwt(@RequestHeader String Authorization){
-        try {
-
-            Jwts.parser().setSigningKey(key).parseClaimsJws(Authorization);
-            return true;
-
-        } catch (JwtException e) {
-
-            System.out.println("error");
-            return false;
-        }
+    @PostMapping("/register")
+    public Object register(@RequestBody UserBean userBean) throws Exception {
+        userSer.register(userBean);
+        return "OK";
     }
 
-    @GetMapping("/getkey")
-    public String getKey(){
-        Date expirationDate = new Date();
-        expirationDate.setTime(expirationDate.getTime()+60*30000);
+    @GetMapping("/checkUserName")
+    public boolean checkUserName(String userName){
+        return userSer.checkUserName(userName);
+    }
 
-        String jws = Jwts.builder().setSubject("test").signWith(key).setExpiration(expirationDate).compact();
-
-        return jws;
+    @GetMapping("/testHeader")
+    public void testHeader(@RequestHeader String Authorization){
+        System.out.println(userSer.testJjwt(Authorization));
     }
 }
