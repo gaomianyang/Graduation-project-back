@@ -32,4 +32,4 @@ spring:
     # 连接超时时间（毫秒）
     timeout: 100000
 server:
-  port: 8080
+  port: 7000

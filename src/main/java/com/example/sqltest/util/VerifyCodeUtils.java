@@ -1,7 +1,8 @@
 package com.example.sqltest.util;
 
 import com.example.sqltest.vo.ImgVo;
-import sun.misc.BASE64Encoder;
+import java.util.Base64;
+import java.util.Base64.Encoder;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -213,13 +214,13 @@ public class VerifyCodeUtils {
      * @throws IOException
      */
     public static ImgVo VerifyCode(int w, int h, int size) throws IOException {
-        BASE64Encoder encoder = new BASE64Encoder();
+        Encoder encoder = Base64.getEncoder();
         ImgVo imgVo = new ImgVo();
         String code = generateVerifyCode(size).toLowerCase();
-        imgVo.setCode(encoder.encode(code.getBytes()));
+        imgVo.setCode(encoder.encodeToString(code.getBytes()));
         ByteArrayOutputStream data = new ByteArrayOutputStream();
         outputImage(w, h, data, code);
-        imgVo.setImg(encoder.encode(data.toByteArray()));
+        imgVo.setImg(encoder.encodeToString(data.toByteArray()));
         return imgVo;
     }
 

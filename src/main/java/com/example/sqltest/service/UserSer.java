@@ -1,22 +1,25 @@
 package com.example.sqltest.service;
 
-import com.example.sqltest.vo.ImgVo;
+
+import com.example.sqltest.bean.ActivitiUserBean;
+import com.example.sqltest.vo.*;
 import com.example.sqltest.bean.UserBean;
 import com.example.sqltest.dao.UserDao;
 import com.example.sqltest.util.AESUtil;
 import com.example.sqltest.util.MD5Util;
 import com.example.sqltest.util.VerifyCodeUtils;
-import com.example.sqltest.vo.LoginVo;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 
@@ -34,17 +37,24 @@ public class UserSer {
     @Value("${saltKey}")
     private String saltKey;
 
-    Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final static Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     @Autowired
     private UserDao userDao;
 
-    public void register(UserBean userBean) throws Exception {
-        if(StringUtils.isEmpty(userBean.getUserName()) || StringUtils.isEmpty(userBean.getPassword())){
+    @Autowired
+    private ActivitiUserSer activitiUserSer;
+
+    @Transactional(rollbackFor = Exception.class)
+    public void register(RegisterVo registerVo) throws Exception {
+        if(StringUtils.isEmpty(registerVo.getUserName()) || StringUtils.isEmpty(registerVo.getPassword())){
             throw new RuntimeException("Error, please re-register!");
         }
-        if(!checkUserName(userBean.getUserName())){
+        if(!checkUserName(registerVo.getUserName())){
+            UserBean userBean = new UserBean();
+            BeanUtils.copyProperties(registerVo, userBean);
             userBean.setPassword(MD5Util.md5(userBean.getPassword(),saltKey));
+            activitiUserSer.register(registerVo);
             userDao.save(userBean);
         }
     }
@@ -67,13 +77,23 @@ public class UserSer {
         }
         loginVo.setPassword(MD5Util.md5(loginVo.getPassword(),saltKey));
         UserBean userBean = new UserBean();
-        userBean.setUserName(loginVo.getUserName());
-        userBean.setPassword(loginVo.getPassword());
+        BeanUtils.copyProperties(loginVo, userBean);
         Example<UserBean> example = Example.of(userBean);
-        return userDao.findOne(example).get().getUserid();
+        // 对admin单独进行处理
+        String userId = userDao.findOne(example).get().getUserid();
+        if("402892f869575f1c01695764edc00000".equals(userId)) {
+            return "isAdmin";
+        }
+        return userId;
     }
 
-    public String getKey(String sub){
+    public Object getKey(String sub){
+        // 对admin单独处理
+        if("isAdmin".equals(sub)){
+            AdminVo adminVo = new AdminVo();
+            adminVo.setAdminPassword(userDao.findByUserName("admin").getPassword());
+            return adminVo;
+        }
         Date expirationDate = new Date();
         expirationDate.setTime(expirationDate.getTime()+30*60*1000);
 
@@ -95,10 +115,27 @@ public class UserSer {
         }
     }
 
-    public ImgVo getImg () throws IOException {
+    public ImgVo getImg() throws IOException {
         ImgVo imgVo = VerifyCodeUtils.VerifyCode(120,40,4);
         imgVo.setCode(AESUtil.encrypt(imgVo.getCode(), saltKey));
         return imgVo;
     }
 
+    public InfoVo getInfo(String Authorization){
+        String jws = AESUtil.decrypt(Authorization,saltKey);
+        UserBean userBean = userDao.findById(Jwts.parser().setSigningKey(key).parseClaimsJws(jws).getBody().getSubject()).get();
+        ActivitiUserBean activitiUserBean = activitiUserSer.findById(userBean.getUserName());
+        InfoVo infoVo = new InfoVo();
+        BeanUtils.copyProperties(userBean, infoVo);
+        BeanUtils.copyProperties(activitiUserBean, infoVo);
+        return infoVo;
+    }
+
+    public UserBean findById(String id){
+        return userDao.findById(id).get();
+    }
+
+    public static Key getKey() {
+        return key;
+    }
 }

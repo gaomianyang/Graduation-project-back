@@ -1,7 +1,6 @@
 package com.example.sqltest.util;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import java.util.Base64;
 
 /**
  * 编码util
@@ -12,14 +11,14 @@ public class CoderUtil {
      * BASE64解码
      */
     public static final byte[] decryptBASE64(String key) throws Exception {
-        return (new BASE64Decoder()).decodeBuffer(key);
+        return (Base64.getDecoder()).decode(key);
     }
 
     /**
      * BASE64编码
      */
     public static final String encryptBASE64(byte[] key) throws Exception {
-        return (new BASE64Encoder()).encodeBuffer(key);
+        return (Base64.getEncoder()).encodeToString(key);
     }
 
     /**

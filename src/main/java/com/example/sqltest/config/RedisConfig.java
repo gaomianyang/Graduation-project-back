@@ -17,10 +17,14 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 
 import java.lang.reflect.Method;
 
+/**
+ * @author T016
+ */
 @Configuration
-@EnableCaching//开启注解
+@EnableCaching
 public class RedisConfig extends CachingConfigurerSupport{
 
+    @Override
     @Bean
     public KeyGenerator keyGenerator() {
         return new KeyGenerator() {

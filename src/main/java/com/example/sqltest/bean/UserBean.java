@@ -1,25 +1,30 @@
 package com.example.sqltest.bean;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name="users")
-@Component
 @GenericGenerator(name = "jpa-uuid", strategy = "uuid")
-public class UserBean {
+public class UserBean implements Serializable {
     @Id
     @GeneratedValue(generator = "jpa-uuid")
-    @Column(name="id")
+    @Column(name="ID")
     private String userid;
 
-    @Column(name="user_name")
+    @Column(name="USERNAME")
     private String userName;
 
-    @Column(name="pass_word")
+    @Column(name="PASSWORD")
     private String password;
+
+    @Column(name="PHONE_NUMBER")
+    private String phoneNumber;
+
+    @Column(name="OPEN_ID")
+    private String openId;
 
     public UserBean() {
     }
@@ -46,5 +51,21 @@ public class UserBean {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
     }
 }
