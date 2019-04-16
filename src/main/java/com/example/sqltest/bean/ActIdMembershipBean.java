@@ -2,6 +2,7 @@ package com.example.sqltest.bean;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
 
@@ -16,22 +17,19 @@ import java.io.Serializable;
 @Table ( name ="act_id_membership" )
 public class ActIdMembershipBean  implements Serializable {
 
-
-	private static final long serialVersionUID =  7212128410004749284L;
-
-
+	@Id
    	@Column(name = "USER_ID_" )
-	private String userId;
+	private String userName;
 
    	@Column(name = "GROUP_ID_" )
 	private String groupId;
 
-	public String getUserId() {
-		return this.userId;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	public String getGroupId() {

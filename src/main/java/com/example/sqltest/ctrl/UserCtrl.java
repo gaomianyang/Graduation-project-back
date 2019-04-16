@@ -1,7 +1,6 @@
 package com.example.sqltest.ctrl;
 
 import com.example.sqltest.vo.ImgVo;
-import com.example.sqltest.bean.UserBean;
 import com.example.sqltest.service.UserSer;
 import com.example.sqltest.vo.LoginVo;
 import com.example.sqltest.vo.RegisterVo;
@@ -20,7 +19,7 @@ public class UserCtrl {
 
     @PostMapping("/login")
     public Object login(@RequestBody LoginVo loginVo) throws Exception {
-        return userSer.getKey(userSer.login(loginVo));
+        return userSer.login(loginVo);
     }
 
     @PostMapping("/register")

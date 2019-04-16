@@ -29,10 +29,7 @@ public class MyFilter implements Filter {
             ServletContext context = request.getServletContext();
             ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(context);
             UserSer userSer = ctx.getBean(UserSer.class);
-
-            if(!userSer.testJjwt(request.getHeader("Authorization"))){
-                throw new RuntimeException("登录过期,请先登录");
-            }
+            userSer.checkJjwt(request.getHeader("Authorization"));
             filterChain.doFilter(srequest, sresponse);
         } else {
             throw new RuntimeException("请先登录");

@@ -34,4 +34,5 @@ public class ActivitiUserSer {
     public ActivitiUserBean findById(String id){
         return activitiUserDao.findById(id).get();
     }
+
 }

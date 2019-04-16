@@ -2,6 +2,7 @@ package com.example.sqltest.bean;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
 
@@ -16,10 +17,7 @@ import java.io.Serializable;
 @Table ( name ="act_id_group" )
 public class ActIdGroupBean  implements Serializable {
 
-
-	private static final long serialVersionUID =  6510074593000287728L;
-
-
+	@Id
    	@Column(name = "ID_" )
 	private String id;
 
@@ -27,7 +25,7 @@ public class ActIdGroupBean  implements Serializable {
 	private Long rev;
 
    	@Column(name = "NAME_" )
-	private String name;
+	private String groupName;
 
    	@Column(name = "TYPE_" )
 	private String type;
@@ -48,12 +46,12 @@ public class ActIdGroupBean  implements Serializable {
 		this.rev = rev;
 	}
 
-	public String getName() {
-		return this.name;
+	public String getGroupName() {
+		return groupName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
 	}
 
 	public String getType() {

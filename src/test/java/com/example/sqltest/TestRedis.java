@@ -37,10 +37,10 @@ public class TestRedis {
         ValueOperations<String, String> operations=redisTemplate.opsForValue();
         operations.set("com.neox", user);
         // timeout为有效时间,规定该数据有效时间
-        operations.set("com.neo.f", user,1, TimeUnit.SECONDS);
-        Thread.sleep(800);
+        operations.set("402892f869575f1c0169576e48b90001", user,1000, TimeUnit.SECONDS);
+        Thread.sleep(1100);
 //        redisTemplate.delete("com.neo.f");
-        boolean exists=redisTemplate.hasKey("com.neo.f");
+        boolean exists=redisTemplate.hasKey("402892f869575f1c0169576e48b90001");
         if(exists){
             System.out.println("exists is true");
         }else{
