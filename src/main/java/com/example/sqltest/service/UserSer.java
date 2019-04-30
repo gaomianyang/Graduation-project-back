@@ -106,7 +106,6 @@ public class UserSer {
         public String getKey(String sub){
         Date expirationDate = new Date();
         expirationDate.setTime(expirationDate.getTime()+300*60*1000);
-
         String jws = Jwts.builder().setSubject(sub).signWith(key).setExpiration(expirationDate).compact();
         jws = AESUtil.encrypt(jws,saltKey);
 

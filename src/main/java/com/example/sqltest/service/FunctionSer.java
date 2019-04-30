@@ -94,23 +94,50 @@ public class FunctionSer {
         return cookie;
     }
 
-    public List<TaskVo> getTasks(String userId, String getType) throws IOException {
+    public Object getTasks(String userId, String processId, String getType, String taskId) throws IOException {
         String cookie = getCookie(userId);
         List<TaskVo> taskVos = new ArrayList<>();
-        if(!StringUtils.isEmpty(cookie)) {
-            Map<String, String> header = new HashMap((int)(1/0.75F + 1.0F));
-            Map<String, String> param = new HashMap((int)(5/0.75F + 1.0F));
-            header.put("Cookie", cookie);
-            param.put("assignee", userSer.getUserName(userId));
-            param.put("page", "0");
-            param.put("state", getType);
-            param.put("assignment", "involved");
-            param.put("sort", "created-desc");
-            CloseableHttpResponse response = HttpUtil.jsonPost("http://localhost:8080/activiti-app/app/rest/query/tasks", param, header);
-            String strResult = EntityUtils.toString(response.getEntity());
-            JSONObject responseBody = JSONObject.parseObject(strResult);
-            taskVos = JSONArray.parseArray(JSONObject.toJSONString(responseBody.get("data"))).toJavaList(TaskVo.class);
-            HttpUtil.closeResponse(response);
+        if(StringUtils.isEmpty(processId) && StringUtils.isEmpty(taskId)){
+            if(!StringUtils.isEmpty(cookie)) {
+                Map<String, String> header = new HashMap((int)(1/0.75F + 1.0F));
+                Map<String, String> param = new HashMap((int)(5/0.75F + 1.0F));
+                header.put("Cookie", cookie);
+                param.put("assignee", userSer.getUserName(userId));
+                param.put("page", "0");
+                param.put("state", getType);
+                param.put("assignment", "involved");
+                param.put("sort", "created-desc");
+                CloseableHttpResponse response = HttpUtil.jsonPost("http://localhost:8080/activiti-app/app/rest/query/tasks", param, header);
+                String strResult = EntityUtils.toString(response.getEntity());
+                JSONObject responseBody = JSONObject.parseObject(strResult);
+                taskVos = JSONArray.parseArray(JSONObject.toJSONString(responseBody.get("data"))).toJavaList(TaskVo.class);
+                HttpUtil.closeResponse(response);
+            }
+        }
+        else if (StringUtils.isEmpty(processId)){
+            if(!StringUtils.isEmpty(cookie)) {
+                Map<String, String> header = new HashMap((int)(1/0.75F + 1.0F));
+                header.put("Cookie", cookie);
+                CloseableHttpResponse response = HttpUtil.get("http://localhost:8080/activiti-app/app/rest/tasks/" + taskId, header);
+                String strResult = EntityUtils.toString(response.getEntity());
+                TaskVo taskVo = JSONObject.parseObject(strResult, TaskVo.class);
+                HttpUtil.closeResponse(response);
+                return taskVo;
+            }
+        }
+        else{
+            if(!StringUtils.isEmpty(cookie)) {
+                Map<String, String> header = new HashMap((int)(1/0.75F + 1.0F));
+                Map<String, String> param = new HashMap((int)(5/0.75F + 1.0F));
+                header.put("Cookie", cookie);
+                param.put("processInstanceId", processId);
+                param.put("state", getType);
+                CloseableHttpResponse response = HttpUtil.jsonPost("http://localhost:8080/activiti-app/app/rest/query/tasks", param, header);
+                String strResult = EntityUtils.toString(response.getEntity());
+                JSONObject responseBody = JSONObject.parseObject(strResult);
+                taskVos = JSONArray.parseArray(JSONObject.toJSONString(responseBody.get("data"))).toJavaList(TaskVo.class);
+                HttpUtil.closeResponse(response);
+            }
         }
         return taskVos;
     }
@@ -140,6 +167,68 @@ public class FunctionSer {
             header.put("Cookie", cookie);
             System.out.println(jsonObject);
             HttpUtil.jsonPostNotResponse("http://localhost:8080/activiti-app/app/rest/task-forms/" + taskId, jsonObject, header);
+        }
+    }
+
+    public List<ProcessVo> getProcess(String userId, String getType) throws IOException {
+        String cookie = getCookie(userId);
+        List<ProcessVo> processVos = new ArrayList<>();
+        if(!StringUtils.isEmpty(cookie)) {
+            Map<String, String> header = new HashMap((int)(1/0.75F + 1.0F));
+            Map<String, String> param = new HashMap((int)(5/0.75F + 1.0F));
+            header.put("Cookie", cookie);
+            param.put("sort", "created-desc");
+            param.put("page", "0");
+            param.put("state", getType);
+            CloseableHttpResponse response = HttpUtil.jsonPost("http://localhost:8080/activiti-app/app/rest/query/process-instances", param, header);
+            String strResult = EntityUtils.toString(response.getEntity());
+            JSONObject responseBody = JSONObject.parseObject(strResult);
+            processVos = JSONArray.parseArray(JSONObject.toJSONString(responseBody.get("data"))).toJavaList(ProcessVo.class);
+            HttpUtil.closeResponse(response);
+        }
+        return processVos;
+    }
+
+    public Object getTaskUser(String userId, String excludeTaskId, String filter) throws IOException {
+        filter = filter.replace(" ","+");
+        String cookie = getCookie(userId);
+        Object returnObject = new Object();
+        if(!StringUtils.isEmpty(cookie)) {
+            Map<String, String> header = new HashMap((int)(1/0.75F + 1.0F));
+            header.put("Cookie", cookie);
+            CloseableHttpResponse response = HttpUtil.
+                    get("http://localhost:8080/activiti-app/app/rest/workflow-users?excludeTaskId="+ excludeTaskId +"&filter="+ filter, header);
+            String strResult = EntityUtils.toString(response.getEntity());
+            returnObject = JSONObject.parseObject(strResult);
+            HttpUtil.closeResponse(response);
+        }
+        return returnObject;
+    }
+
+    public void involvedUser(String userId, InvolvedVo involvedVo) throws IOException {
+        String cookie = getCookie(userId);
+        if(!StringUtils.isEmpty(cookie)) {
+            Map<String, String> header = new HashMap((int)(1/0.75F + 1.0F));
+            Map<String, String> param = new HashMap((int)(1/0.75F + 1.0F));
+            header.put("Cookie", cookie);
+            for(String invoUserId : involvedVo.getInvoUserIds()) {
+                param.put("userId", invoUserId);
+                HttpUtil.jsonPutNotResponse("http://localhost:8080/activiti-app/app/rest/tasks/" + involvedVo.getTaskId() + "/action/" + involvedVo.getType(), param ,header);
+                param.clear();
+            }
+        }
+    }
+
+    public boolean getUserName(String Authorization, String userId){
+        return userSer.findById(userSer.getUserId(Authorization)).getUserName().equals(userId);
+    }
+
+    public void claim(String userId, String taskId) throws IOException {
+        String cookie = getCookie(userId);
+        if(!StringUtils.isEmpty(cookie)) {
+            Map<String, String> header = new HashMap((int)(1/0.75F + 1.0F));
+            header.put("Cookie", cookie);
+            HttpUtil.jsonPutNotResponse("http://localhost:8080/activiti-app/app/rest/tasks/" + taskId + "/action/claim", null ,header);
         }
     }
 }

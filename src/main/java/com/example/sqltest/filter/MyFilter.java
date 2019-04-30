@@ -1,7 +1,6 @@
 package com.example.sqltest.filter;
 
 import com.example.sqltest.service.UserSer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.WebApplicationContextUtils;

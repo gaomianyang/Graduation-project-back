@@ -51,8 +51,9 @@ public class FunctionCtrl {
     }
 
     @GetMapping("/tasks")
-    public List<TaskVo> getTasks(@RequestHeader String Authorization, String getType) throws IOException, IllegalAccessException {
-        return functionSer.getTasks(userSer.getUserId(Authorization), getType);
+    public Object getTasks(@RequestHeader String Authorization,String processId, String getType, String taskId) throws IOException {
+
+        return functionSer.getTasks(userSer.getUserId(Authorization), processId, getType, taskId);
     }
 
     @GetMapping("/form")
@@ -63,5 +64,30 @@ public class FunctionCtrl {
     @PutMapping("/tasks")
     public void taskComplete(@RequestHeader String Authorization, @RequestBody JSONObject jsonObject, String taskId) throws IOException {
         functionSer.completeTask(jsonObject, userSer.getUserId(Authorization), taskId);
+    }
+
+    @GetMapping("/process")
+    public List<ProcessVo> getProcesses(@RequestHeader String Authorization, String getType) throws IOException {
+        return functionSer.getProcess(userSer.getUserId(Authorization), getType);
+    }
+
+    @GetMapping("/user")
+    public Object getTaskUser(@RequestHeader String Authorization, String excludeTaskId, String filter) throws IOException {
+        return functionSer.getTaskUser(userSer.getUserId(Authorization), excludeTaskId, filter);
+    }
+
+    @PutMapping("/involved")
+    public void involvedUser(@RequestHeader String Authorization,@RequestBody InvolvedVo involvedVo) throws IOException {
+        functionSer.involvedUser(userSer.getUserId(Authorization), involvedVo);
+    }
+
+    @GetMapping("/comAuthentication")
+    public boolean comAuthentication(@RequestHeader String Authorization, String userId){
+        return functionSer.getUserName(Authorization, userId);
+    }
+
+    @PutMapping("/claim")
+    public void claim(@RequestHeader String Authorization, String taskId) throws IOException {
+        functionSer.claim(userSer.getUserId(Authorization), taskId);
     }
 }

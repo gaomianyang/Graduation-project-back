@@ -9,6 +9,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -87,6 +88,42 @@ public class HttpUtil {
         return response;
     }
 
+    public static void jsonPutNotResponse(String url, Map<String, String> param, Map<String, String> header) throws IOException {
+        CloseableHttpClient client = HttpClients.createDefault();
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectTimeout(5000).setConnectionRequestTimeout(1000)
+                .setSocketTimeout(5000).build();
+        HttpPut put = new HttpPut(url);
+        put.setConfig(requestConfig);
+        put.setHeader("Content-Type", "application/json");
+        if(null != header){
+            for(Map.Entry<String, String> entry : header.entrySet()){
+                put.addHeader(entry.getKey(), entry.getValue());
+            }
+        }
+        if(null != param) {
+            JSONObject requestBody = JSONObject.parseObject(JSON.toJSONString(param));
+            StringEntity entity = new StringEntity(requestBody.toString(), "utf-8");
+            entity.setContentEncoding("UTF-8");
+            put.setEntity(entity);
+        }
+        client.execute(put);
+    }
+
+    public static void getNotResponse(String url, Map<String, String> header) throws IOException {
+        CloseableHttpClient client = HttpClients.createDefault();
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectTimeout(5000).setConnectionRequestTimeout(1000)
+                .setSocketTimeout(5000).build();
+        HttpGet get = new HttpGet(url);
+        get.setConfig(requestConfig);
+        if(null != header){
+            for(Map.Entry<String, String> entry : header.entrySet()){
+                get.addHeader(entry.getKey(), entry.getValue());
+            }
+        }
+        client.execute(get);
+    }
 
     public static void jsonPostNotResponse(String url, Map<String, String> param, Map<String, String> header) throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
