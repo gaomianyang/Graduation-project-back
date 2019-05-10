@@ -34,12 +34,12 @@ public class HttpUtil {
         HttpPost post = new HttpPost(url);
         post.setConfig(requestConfig);
         post.setHeader("Content-Type", "application/json");
-        if(null != header){
+        if(null != header && header.size() > 0){
             for(Map.Entry<String, String> entry : header.entrySet()){
                 post.addHeader(entry.getKey(), entry.getValue());
             }
         }
-        if(null != param) {
+        if(null != param && param.size() > 0) {
             JSONObject requestBody = JSONObject.parseObject(JSON.toJSONString(param));
             StringEntity entity = new StringEntity(requestBody.toString(), "utf-8");
             entity.setContentEncoding("UTF-8");
@@ -57,12 +57,12 @@ public class HttpUtil {
         HttpPost post = new HttpPost(url);
         post.setConfig(requestConfig);
         post.setHeader("Content-Type", "application/json");
-        if(null != header){
+        if(null != header && header.size() > 0){
             for(Map.Entry<String, String> entry : header.entrySet()){
                 post.addHeader(entry.getKey(), entry.getValue());
             }
         }
-        if(null != param) {
+        if(null != param && param.size() > 0) {
             StringEntity entity = new StringEntity(param.toString(), "utf-8");
             entity.setContentEncoding("UTF-8");
             post.setEntity(entity);
@@ -79,7 +79,7 @@ public class HttpUtil {
                 .setSocketTimeout(5000).build();
         HttpGet get = new HttpGet(url);
         get.setConfig(requestConfig);
-        if(null != header){
+        if(null != header && header.size() > 0){
             for(Map.Entry<String, String> entry : header.entrySet()){
                 get.addHeader(entry.getKey(), entry.getValue());
             }
@@ -96,12 +96,12 @@ public class HttpUtil {
         HttpPut put = new HttpPut(url);
         put.setConfig(requestConfig);
         put.setHeader("Content-Type", "application/json");
-        if(null != header){
+        if(null != header && header.size() > 0){
             for(Map.Entry<String, String> entry : header.entrySet()){
                 put.addHeader(entry.getKey(), entry.getValue());
             }
         }
-        if(null != param) {
+        if(null != param && param.size() > 0) {
             JSONObject requestBody = JSONObject.parseObject(JSON.toJSONString(param));
             StringEntity entity = new StringEntity(requestBody.toString(), "utf-8");
             entity.setContentEncoding("UTF-8");
@@ -117,7 +117,7 @@ public class HttpUtil {
                 .setSocketTimeout(5000).build();
         HttpGet get = new HttpGet(url);
         get.setConfig(requestConfig);
-        if(null != header){
+        if(null != header && header.size() > 0){
             for(Map.Entry<String, String> entry : header.entrySet()){
                 get.addHeader(entry.getKey(), entry.getValue());
             }
@@ -133,12 +133,12 @@ public class HttpUtil {
         HttpPost post = new HttpPost(url);
         post.setConfig(requestConfig);
         post.setHeader("Content-Type", "application/json");
-        if(null != header){
+        if(null != header && header.size() > 0){
             for(Map.Entry<String, String> entry : header.entrySet()){
                 post.addHeader(entry.getKey(), entry.getValue());
             }
         }
-        if(null != param) {
+        if(null != param && param.size() > 0) {
             JSONObject requestBody = JSONObject.parseObject(JSON.toJSONString(param));
             StringEntity entity = new StringEntity(requestBody.toString(), "utf-8");
             entity.setContentEncoding("UTF-8");
@@ -155,12 +155,12 @@ public class HttpUtil {
         HttpPost post = new HttpPost(url);
         post.setConfig(requestConfig);
         post.setHeader("Content-Type", "application/json");
-        if(null != header){
+        if(null != header && header.size() > 0){
             for(Map.Entry<String, String> entry : header.entrySet()){
                 post.addHeader(entry.getKey(), entry.getValue());
             }
         }
-        if(null != param) {
+        if(null != param && param.size() > 0) {
             StringEntity entity = new StringEntity(param.toString(), "utf-8");
             entity.setContentEncoding("UTF-8");
             post.setEntity(entity);
@@ -176,13 +176,13 @@ public class HttpUtil {
         HttpPost post = new HttpPost(url);
         post.setConfig(requestConfig);
         post.setHeader("Content-Type", "application/x-www-form-urlencoded");
-        if(null != header){
+        if(null != header && header.size() > 0){
             for(Map.Entry<String, String> entry : header.entrySet()){
                 post.addHeader(entry.getKey(), entry.getValue());
             }
         }
         List<NameValuePair> nvps = new ArrayList();
-        if(null != param) {
+        if(null != param && param.size() > 0) {
             for (Map.Entry<String, String> entry : param.entrySet()) {
                 nvps.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
             }

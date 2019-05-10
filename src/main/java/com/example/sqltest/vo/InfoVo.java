@@ -11,6 +11,7 @@ public class InfoVo {
     private String firstName;
     private String lastName;
     private String groupName;
+    private String openId;
 
     public String getUserName() {
         return userName;
@@ -58,5 +59,13 @@ public class InfoVo {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
     }
 }

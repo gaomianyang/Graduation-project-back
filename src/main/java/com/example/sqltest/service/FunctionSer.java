@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,12 +67,13 @@ public class FunctionSer {
     }
 
     public void createProcess(String userId, CreateProcessVo createProcessVo) throws IOException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String cookie = getCookie(userId);
         if(!StringUtils.isEmpty(cookie)) {
             Map<String, String> header = new HashMap((int)(1/0.75F + 1.0F));
             Map<String, String> param = new HashMap((int)(2/0.75F + 1.0F));
             header.put("Cookie", cookie);
-            param.put("name", createProcessVo.getName() + " " + new Date());
+            param.put("name", createProcessVo.getName() + " " + sdf.format(new Date()));
             param.put("processDefinitionId", createProcessVo.getProcdefId());
             HttpUtil.jsonPostNotResponse("http://localhost:8080/activiti-app/app/rest/process-instances", param, header);
         }
@@ -166,7 +168,11 @@ public class FunctionSer {
             Map<String, String> header = new HashMap((int) (1 / 0.75F + 1.0F));
             header.put("Cookie", cookie);
             System.out.println(jsonObject);
-            HttpUtil.jsonPostNotResponse("http://localhost:8080/activiti-app/app/rest/task-forms/" + taskId, jsonObject, header);
+            if (null != jsonObject && jsonObject.size() > 0) {
+                HttpUtil.jsonPostNotResponse("http://localhost:8080/activiti-app/app/rest/task-forms/" + taskId, jsonObject, header);
+            } else {
+                HttpUtil.jsonPutNotResponse("http://localhost:8080/activiti-app/app/rest/tasks/" + taskId + "/action/complete", null, header);
+            }
         }
     }
 
