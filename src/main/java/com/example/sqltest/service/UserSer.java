@@ -177,4 +177,8 @@ public class UserSer {
         String jws = AESUtil.decrypt(Authorization,saltKey);
         return Jwts.parser().setSigningKey(key).parseClaimsJws(jws).getBody().getSubject();
     }
+
+    public UserBean findByUserName(String userName){
+        return userDao.findByUserName(userName);
+    }
 }

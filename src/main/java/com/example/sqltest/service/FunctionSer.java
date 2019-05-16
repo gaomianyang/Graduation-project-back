@@ -2,10 +2,7 @@ package com.example.sqltest.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.example.sqltest.bean.ActDeModelBean;
-import com.example.sqltest.bean.ActReDeploymentBean;
-import com.example.sqltest.bean.ActReProcdefBean;
-import com.example.sqltest.bean.UserBean;
+import com.example.sqltest.bean.*;
 import com.example.sqltest.util.HttpUtil;
 import com.example.sqltest.util.RedisUtil;
 import com.example.sqltest.vo.*;
@@ -15,6 +12,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -37,7 +35,12 @@ public class FunctionSer {
     private ActReProcdefSer actReProcdefSer;
 
     @Autowired
+    private ActivitiUserSer activitiUserSer;
+
+    @Autowired
     private UserSer userSer;
+
+    private Jedis jedis = new Jedis("101.132.72.98", 6379);
 
     public List<ProcessModelVo> getAllProcessModel(){
         List<ActReDeploymentBean> actReDeploymentBeans = actReDeploymentSer.findAll();
@@ -220,6 +223,13 @@ public class FunctionSer {
             for(String invoUserId : involvedVo.getInvoUserIds()) {
                 param.put("userId", invoUserId);
                 HttpUtil.jsonPutNotResponse("http://localhost:8080/activiti-app/app/rest/tasks/" + involvedVo.getTaskId() + "/action/" + involvedVo.getType(), param ,header);
+                String openId = userSer.findByUserName(invoUserId).getOpenId();
+                ActivitiUserBean activitiUserBean = activitiUserSer.findById(userSer.findById(userId).getUserName());
+                String name = activitiUserBean.getFirstName() + activitiUserBean.getLastName();
+                if(!StringUtils.isEmpty(openId)) {
+                    jedis.auth("Gao0814gao");
+                    jedis.lpush("wxMessage", openId + "++fg任务分配人：" + name + "请尽快登录处理");
+                }
                 param.clear();
             }
         }
@@ -236,5 +246,13 @@ public class FunctionSer {
             header.put("Cookie", cookie);
             HttpUtil.jsonPutNotResponse("http://localhost:8080/activiti-app/app/rest/tasks/" + taskId + "/action/claim", null ,header);
         }
+    }
+
+    public String imgCode(String userId) throws IOException {
+        CloseableHttpResponse response = HttpUtil.
+                get("http://101.132.72.98/wx/getCodeImg?userId=" + userId, null);
+        String strResult = EntityUtils.toString(response.getEntity());
+        HttpUtil.closeResponse(response);
+        return strResult;
     }
 }

@@ -90,4 +90,9 @@ public class FunctionCtrl {
     public void claim(@RequestHeader String Authorization, String taskId) throws IOException {
         functionSer.claim(userSer.getUserId(Authorization), taskId);
     }
+
+    @GetMapping("/codeImg")
+    public String codeImg(@RequestHeader String Authorization) throws IOException {
+        return functionSer.imgCode(userSer.getUserId(Authorization));
+    }
 }
