@@ -125,7 +125,7 @@ public class HttpUtil {
         client.execute(get);
     }
 
-    public static void jsonPostNotResponse(String url, Map<String, String> param, Map<String, String> header) throws IOException {
+    public static void jsonPostNotResponse(String url, Map<String, Object> param, Map<String, String> header) throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectTimeout(5000).setConnectionRequestTimeout(1000)

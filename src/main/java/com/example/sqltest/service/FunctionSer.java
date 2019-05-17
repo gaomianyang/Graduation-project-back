@@ -74,7 +74,7 @@ public class FunctionSer {
         String cookie = getCookie(userId);
         if(!StringUtils.isEmpty(cookie)) {
             Map<String, String> header = new HashMap((int)(1/0.75F + 1.0F));
-            Map<String, String> param = new HashMap((int)(2/0.75F + 1.0F));
+            Map<String, Object> param = new HashMap((int)(2/0.75F + 1.0F));
             header.put("Cookie", cookie);
             param.put("name", createProcessVo.getName() + " " + sdf.format(new Date()));
             param.put("processDefinitionId", createProcessVo.getProcdefId());
@@ -95,7 +95,7 @@ public class FunctionSer {
         param.put("submit", "Login");
         CloseableHttpResponse loginResponse = HttpUtil.formPost("http://localhost:8080/activiti-app/app/authentication", param, null);
         cookie = HttpUtil.getCookie(loginResponse);
-        RedisUtil.setKeyValue(userId, cookie, 60*300);
+        RedisUtil.setKeyValue(userId, cookie, 60*30);
         return cookie;
     }
 
@@ -228,7 +228,7 @@ public class FunctionSer {
                 String name = activitiUserBean.getFirstName() + activitiUserBean.getLastName();
                 if(!StringUtils.isEmpty(openId)) {
                     jedis.auth("Gao0814gao");
-                    jedis.lpush("wxMessage", openId + "++fg任务分配人：" + name + "请尽快登录处理");
+                    jedis.lpush("wxMessage", openId + "䚕㜫任务分配人：" + name + "请尽快登录处理");
                 }
                 param.clear();
             }
